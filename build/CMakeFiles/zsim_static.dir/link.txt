@@ -1,2 +1,0 @@
-/usr/bin/ar qc lib/libzsim.a  src/CMakeFiles/zsCore.dir/zsCore/Domain.cpp.o src/CMakeFiles/zsCore.dir/zsCore/EngineeringModel.cpp.o
-/usr/bin/ranlib lib/libzsim.a
