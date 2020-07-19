@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/Mokhairy/CLionProjects/zsim/src/zsCore/Domain.cpp
+Domain.h
+/mnt/c/Users/Mokhairy/CLionProjects/zsim/src/zsCore/Domain.h
+
+/mnt/c/Users/Mokhairy/CLionProjects/zsim/src/zsCore/Domain.h
+
+/mnt/c/Users/Mokhairy/CLionProjects/zsim/src/zsCore/EngineeringModel.cpp
+EngineeringModel.h
+/mnt/c/Users/Mokhairy/CLionProjects/zsim/src/zsCore/EngineeringModel.h
+
+/mnt/c/Users/Mokhairy/CLionProjects/zsim/src/zsCore/EngineeringModel.h
+
