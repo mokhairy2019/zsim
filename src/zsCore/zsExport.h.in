@@ -1,0 +1,143 @@
+#pragma once
+/** @file zsExport.h
+
+    @brief Handles shared library creation and other class attributes
+
+*/
+
+#include "zsCore/zsConfig.h"
+
+
+/*
+  Symbol exporting and importing
+
+  By default no symbols are exported to the shared library. Symbols
+  that have to be exported must be marked with ZSIM_EXPORT. Symbols
+  that should not be exported can be marked with ZSIM_LOCAL.
+  Also:
+  
+  - When building the shared library, zsim_EXPORTS must be defined,
+  but NOT when consuming G+Smo as a shared library
+  
+  - When building the static library, zsim_STATIC must be defined
+  
+  - If ZSIM_BUILD_LIB is defined when building or consuming the
+  shared or static library then function definitions in .hpp files are
+  not included after class/function declarations. Otherwise
+  (ZSIM_BUILD_LIB not defined) a pure template build will take place.
+  The macro ZSIM_BUILD_LIB is controlled in zsCore/zsConfig.h.
+
+  info: https://gcc.gnu.org/wiki/Visibility
+*/
+#if defined(@PROJECT_NAME@_STATIC) // using/building static library
+
+#  define ZSIM_EXPORT
+#  define ZSIM_IMPORT
+//#  define ZSIM_LOCAL
+#  define ZSIM_DEFAULT_VIS //GCC warns when base/derived class differ in visibility, this macro allows to add attribute to the templated base
+
+#elif defined(@PROJECT_NAME@_EXPORTS) // building shared library: export, don't import
+
+#  if defined(_WIN32) || defined(__CYGWIN__)
+#    define ZSIM_EXPORT __declspec(dllexport) //equiv. __attribute__ ((dllexport))
+//#    define ZSIM_LOCAL
+#    define ZSIM_DEFAULT_VIS
+#  else						                
+#    define ZSIM_EXPORT __attribute__((visibility("default")))
+//#    define ZSIM_LOCAL  __attribute__((visibility("hidden" )))
+#    define ZSIM_DEFAULT_VIS __attribute__((visibility("default")))
+#  endif
+#  define ZSIM_IMPORT
+
+#else // using shared library: import all
+
+#  if defined(_WIN32) || defined(__CYGWIN__)
+#    define ZSIM_EXPORT __declspec(dllimport) //equiv. __attribute__ ((dllimport))
+#    define ZSIM_IMPORT __declspec(dllimport)
+#  else
+// GCC: If a symbol declared dllimport is later defined, the attribute
+// is ignored in subsequent references, and a warning is emitted.
+#    define ZSIM_EXPORT //__attribute__ ((dllimport))
+#    define ZSIM_IMPORT //__attribute__ ((dllimport))
+#  endif
+//#  define ZSIM_LOCAL
+#  define ZSIM_DEFAULT_VIS
+#endif
+
+
+/*
+  Macros for instantiating templated structs, classes or functions.
+  
+  - When using the shared library all instantiations are expected to
+  be imported from the library are marked as "extern template".  This
+  allows the compile to avoid to instantiate the template in this
+  translation unit.
+  
+  - When compiling the translation unit for an explicit template
+  instantiation of a certain templated class, the
+  EXTERN_CLASS_TEMPLATE must be replaced with an explicit
+  instantiation directive, i.e. CLASS_TEMPLATE_INST.
+  
+  - On GCC the scheme would work if the "extern template" where still
+  present in the headers and CLASS_TEMPLATE_INST would follow later.
+  Hoever, in MSVC2010, "extern template" cannot be followed later by
+  an explicit instantization.  Actually MSVC considers "extern
+  template" already to be an instantization, which can happen only
+  once in the translation unit.  Hence the error C2960 is emitted.
+  
+  - The compiler is free to inline any function that it has the
+  definition for, if it chooses to do so.
+
+  info: https://support.microsoft.com/en-us/kb/168958
+*/
+#define STRUCT_TEMPLATE_INST   template struct        ZSIM_EXPORT
+#define CLASS_TEMPLATE_INST    template class         ZSIM_EXPORT
+#define TEMPLATE_INST          template               ZSIM_EXPORT
+#define EXTERN_STRUCT_TEMPLATE extern template struct ZSIM_IMPORT
+#define EXTERN_CLASS_TEMPLATE  extern template class  ZSIM_IMPORT
+#define EXTERN_TEMPLATE        extern template        ZSIM_IMPORT
+
+#ifndef __has_feature // clang only
+#define __has_feature(x) 0
+#endif
+
+/* 
+   Override control
+
+  - ZSIM_FINAL
+  Marks a virtual method indicating that derived classes cannot
+  override it, or mark a class to indicate that there can be no
+  derived classes.
+
+  Example:
+  virtual void foo() ZSIM_FINAL;
+  class B ZSIM_FINAL : public A {};
+
+  - ZSIM_OVERRIDE
+  Marks a virtual method indicating it must be overriding a virtual
+  method of the base class
+  
+  Example:
+  virtual void foo() ZSIM_OVERRIDE;
+*/
+#if defined(_MSC_VER) && _MSC_VER < 1700   // all versions before MSVC 2012
+// MSVC2010 uses "sealed", later versions accept final as well
+#  define ZSIM_FINAL sealed
+#  define ZSIM_OVERRIDE override
+#elif _MSC_VER >= 1700   // MSVC 2012 upward
+#  define ZSIM_FINAL final
+#  define ZSIM_OVERRIDE override
+#elif defined(__clang__ ) && __has_feature(cxx_override_control)
+#  define ZSIM_FINAL final
+#  define ZSIM_OVERRIDE override
+#elif defined(__GNUG__) && __cplusplus >= 201103 && \
+    (__GNUC__ * 10000 + __GNUC_MINOR__ * 100) >= 40700
+// GCC 4.7 supports override control with C++11 enabled
+#  define ZSIM_FINAL final
+#  define ZSIM_OVERRIDE override
+#else
+#  define ZSIM_FINAL
+#  define ZSIM_OVERRIDE
+#endif
+
+

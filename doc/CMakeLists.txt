@@ -31,7 +31,7 @@ if(DOXYGEN_FOUND)
     # Set some Doxygen flags
     set(ZSIM_DOXY_PROJECT_NAME             "G+Smo")
     set(ZSIM_DOXY_OUTPUT_DIRECTORY_SUFFIX  "")
-    set(ZSIM_DOXY_INPUT                    "\"${zsim_SOURCE_DIR}/src\" \"${zsim_SOURCE_DIR}/doc\" \"${zsim_SOURCE_DIR}/plugins\" \"${zsim_SOURCE_DIR}/extensions\" \"${zsim_BINARY_DIR}/gsCore\"") #\"${zsim_SOURCE_DIR}/examples\"
+    set(ZSIM_DOXY_INPUT                    "\"${zsim_SOURCE_DIR}/src\" \"${zsim_SOURCE_DIR}/doc\" \"${zsim_SOURCE_DIR}/plugins\" \"${zsim_SOURCE_DIR}/extensions\" \"${zsim_BINARY_DIR}/zsCore\"") #\"${zsim_SOURCE_DIR}/examples\"
     # Uncomment the line below to have doxygen process only
     # what is inside the doc folder when typing 'make doc'
     #set(ZSIM_DOXY_INPUT                    " \"${zsim_SOURCE_DIR}/doc\" ")

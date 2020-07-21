@@ -22,27 +22,27 @@ string(REPLACE "-DNDEBUG" "" replacementFlags "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO ${replacementFlags} CACHE INTERNAL "" FORCE)
 
 # Set a default coefficient numeric types if not specified
-if(NOT zsim_COEFF_TYPE)
-    set (zsim_COEFF_TYPE "double" CACHE STRING
+if(NOT ZSIM_COEFF_TYPE)
+    set (ZSIM_COEFF_TYPE "double" CACHE STRING
             "Coefficient type(float, double, long double, mpfr::mpreal, mpq_class, posit_32_2)" FORCE)
-elseif(${zsim_COEFF_TYPE} STREQUAL "mpfr::mpreal")
-    set(zsim_WITH_MPFR ON CACHE BOOL "Use MPFR" FORCE)
-    #set(zsim_WITH_MPQ OFF CACHE BOOL "Use GMP/mpq_class")
-elseif(${zsim_COEFF_TYPE} STREQUAL "mpq_class")
-    set(zsim_WITH_MPQ ON CACHE BOOL "Use GMP/mpq_class" FORCE)
-    #set(zsim_WITH_MPFR OFF CACHE BOOL "Use MPFR")
-elseif(${zsim_COEFF_TYPE} STREQUAL "posit_32_2")
-    set(zsim_WITH_UNUM ON CACHE BOOL "Use UNUM" FORCE)
+elseif(${ZSIM_COEFF_TYPE} STREQUAL "mpfr::mpreal")
+    set(ZSIM_WITH_MPFR ON CACHE BOOL "Use MPFR" FORCE)
+    #set(ZSIM_WITH_MPQ OFF CACHE BOOL "Use GMP/mpq_class")
+elseif(${ZSIM_COEFF_TYPE} STREQUAL "mpq_class")
+    set(ZSIM_WITH_MPQ ON CACHE BOOL "Use GMP/mpq_class" FORCE)
+    #set(ZSIM_WITH_MPFR OFF CACHE BOOL "Use MPFR")
+elseif(${ZSIM_COEFF_TYPE} STREQUAL "posit_32_2")
+    set(ZSIM_WITH_UNUM ON CACHE BOOL "Use UNUM" FORCE)
 endif()
-set_property(CACHE zsim_COEFF_TYPE PROPERTY STRINGS
+set_property(CACHE ZSIM_COEFF_TYPE PROPERTY STRINGS
         "float" "double" "long double" "mpfr::mpreal" "mpq_class" "posit_32_2")
 
-if(NOT zsim_INDEX_TYPE)
-    set (zsim_INDEX_TYPE "int" CACHE STRING
+if(NOT ZSIM_INDEX_TYPE)
+    set (ZSIM_INDEX_TYPE "int" CACHE STRING
             #math(EXPR BITSZ_VOID_P "8*${CMAKE_SIZEOF_VOID_P}")
-            #set (zsim_INDEX_TYPE "int${BITSZ_VOID_P}_t" CACHE STRING
+            #set (ZSIM_INDEX_TYPE "int${BITSZ_VOID_P}_t" CACHE STRING
             "Index type(int, int32_t, int64_t, long, long long)" FORCE)
-    set_property(CACHE zsim_INDEX_TYPE PROPERTY STRINGS
+    set_property(CACHE ZSIM_INDEX_TYPE PROPERTY STRINGS
             "int" "int32_t" "int64_t" "long" "long long" )
 endif()
 
@@ -71,11 +71,11 @@ endforeach()
 #--gen-suppressions=all --trace-children=yes --track-origins=yes
 #set( MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --show-reachable=yes" CACHE INTERNAL "")
 set( MEMORYCHECK_COMMAND_OPTIONS "--error-exitcode=1 --leak-check=yes -q" CACHE INTERNAL "") #note: empty defaults to "-q --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=50
-set( MEMORYCHECK_SUPPRESSIONS_FILE "${zsim_SOURCE_DIR}/cmake/valgrind_supp.txt" CACHE INTERNAL "")
+set( MEMORYCHECK_SUPPRESSIONS_FILE "${ZSIM_SOURCE_DIR}/cmake/valgrind_supp.txt" CACHE INTERNAL "")
 
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
-include(AddCXXCompileOptions)
+#[[include(AddCXXCompileOptions)]]
 
 if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xIntel")
     # message(STATUS "Using Boost for smart pointers")
@@ -87,14 +87,14 @@ endif()
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftime-report")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Q")
 
-if(zsim_BUILD_COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
+if(ZSIM_BUILD_COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
     # see http://www.cmake.org/Wiki/CTest:Coverage
     # and http://cmake.3232098.n2.nabble.com/Running-coverage-analysis-td7145452.html
     include(CodeCoverage)
     APPEND_COVERAGE_COMPILER_FLAGS()
     #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ftest-coverage -fprofile-arcs")
     #set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
-endif(zsim_BUILD_COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
+endif(ZSIM_BUILD_COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
 
 if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
 
@@ -114,7 +114,7 @@ if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
     #STRING(REPLACE "/INCREMENTAL:YES" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
     #STRING(REPLACE "/INCREMENTAL:YES" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO ${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO})
 
-    #    if ( zsim_BUILD_LIB )
+    #    if ( ZSIM_BUILD_LIB )
     #    # /MD /MDd
     #      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MD")
     #    endif()
@@ -128,9 +128,9 @@ if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
 
 endif()
 
-if(zsim_EXTRA_DEBUG)
+if(ZSIM_EXTRA_DEBUG)
     include(zsDebugExtra)
-endif(zsim_EXTRA_DEBUG)
+endif(ZSIM_EXTRA_DEBUG)
 
 if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
     # Force to always compile with W4
@@ -155,7 +155,7 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-c++11-compat")
     endif()
 
-    if(zsim_WARNINGS)
+    if(ZSIM_WARNINGS)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Woverloaded-virtual -Wextra")
         #-Wshadow -Wconversion -pedantic -Wunused -Wattributes
     endif()
@@ -191,18 +191,18 @@ elseif(NOT MSVC AND NOT POLICY CMP0063 AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "Dar
     endif()
 endif()
 
-if (zsim_WITH_OPENMP)
+if (ZSIM_WITH_OPENMP)
     find_package(OpenMP REQUIRED)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-if (CMAKE_COMPILER_IS_GNUCXX AND NOT zsim_WITH_OPENMP)
+if (CMAKE_COMPILER_IS_GNUCXX AND NOT ZSIM_WITH_OPENMP)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Intel" AND NOT zsim_WITH_OPENMP)
+if (CMAKE_CXX_COMPILER_ID MATCHES "Intel" AND NOT ZSIM_WITH_OPENMP)
     if ( CMAKE_SYSTEM_NAME MATCHES "Linux" )
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -diag-disable 3180") #comma for more warns
     elseif ( CMAKE_SYSTEM_NAME MATCHES "Windows" )
@@ -213,7 +213,7 @@ endif()
 
 #CHECK_CXX_SOURCE_COMPILES(
 #"template<typename T> class A {}; extern template class A<int>; int main() {}"
-#zsim_HAS_EXTERN_TEMPLATES)
+#ZSIM_HAS_EXTERN_TEMPLATES)
 
 #message("CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}")
 #message("CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG}")

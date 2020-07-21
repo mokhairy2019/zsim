@@ -42,7 +42,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 endif()
 
 include( zsimUse )
-include( zsimConfig )
+include( zsConfig )
 
 message( "   zzzzzzzzz        GGGG      GGGGGGGGG  GGGGGG   GGGGGG  GGGGGGGGGG" )
 message( "         zz         GGGG     GGGG        GGGGGG  GGGGGG  GGGG   GGGG" )
@@ -62,6 +62,18 @@ include(CTest)
 # Note: clean cache to reset to OFF
 set(BUILD_TESTING "Enable testing" ${ZSIM_BUILD_UNITTESTS})
 
+## #################################################################
+## Preprocessor definitions
+## #################################################################
+
+# Data directory
+include ( zsDataDir )
+
+# Configure
+configure_file ("${PROJECT_SOURCE_DIR}/src/zsCore/zsConfig.h.in"
+        "${PROJECT_BINARY_DIR}/zsCore/zsConfig.h" )
+configure_file ("${PROJECT_SOURCE_DIR}/src/zsCore/zsExport.h.in"
+        "${PROJECT_BINARY_DIR}/zsCore/zsExport.h" )
 ## #################################################################
 ## Collect headers and sources
 ## #################################################################

@@ -3,7 +3,7 @@
 //
 #include <iostream>
 int main (){
-    std::cout << "Hello to zsim !" << std::endl;
+    std::cout << "Hello to zsim buddy !" << std::endl;
     return 0;
 }
 

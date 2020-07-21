@@ -1,5 +1,5 @@
 ######################################################################
-## gsIntall.cmake ---
+## zsIntall.cmake ---
 ## This file is part of the zsim library.
 ##
 ## Author: Mohamed Mahmoud
@@ -52,14 +52,14 @@ endif()
 # (this registers the build-tree with a global CMake-registry)
 export(PACKAGE zsim)
 
-# Create the zsimConfig.cmake and zsimConfigVersion.cmake files
+# Create the zsConfig.cmake and zsimConfigVersion.cmake files
 
 # ... for the build tree
 set(CONF_INCLUDE_DIRS "${ZSIM_INCLUDE_DIRS}")
 set(CONF_LIB_DIRS     "${CMAKE_BINARY_DIR}/lib")
 set(CONF_MODULE_PATH  "${zsim_SOURCE_DIR}/cmake")
 set(CONF_USE_FILE     "${CMAKE_BINARY_DIR}/zsimUse.cmake")
-configure_file(${PROJECT_SOURCE_DIR}/cmake/zsimConfig.cmake.in
+configure_file(${PROJECT_SOURCE_DIR}/cmake/zsConfig.cmake.in
         "${CMAKE_BINARY_DIR}/zsimConfig.cmake" @ONLY)
 file(COPY ${PROJECT_SOURCE_DIR}/cmake/zsimUse.cmake DESTINATION ${CMAKE_BINARY_DIR})
 
@@ -68,7 +68,7 @@ set(CONF_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}/${PROJECT_
 set(CONF_LIB_DIRS     "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 set(CONF_MODULE_PATH   "${CMAKE_INSTALL_DIR}")
 set(CONF_USE_FILE     "${CMAKE_INSTALL_DIR}/zsimUse.cmake")
-configure_file(${PROJECT_SOURCE_DIR}/cmake/zsimConfig.cmake.in
+configure_file(${PROJECT_SOURCE_DIR}/cmake/zsConfig.cmake.in
         "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/zsimConfig.cmake" @ONLY)
 
 # ... for both
@@ -80,17 +80,17 @@ if(ZSIM_BUILD_LIB)
     set_target_properties(zsim PROPERTIES
             PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/src/zsim.h")
 
-    # For gsExport.h
-    install(FILES ${PROJECT_BINARY_DIR}/gsCore/gsExport.h
-            DESTINATION include/${PROJECT_NAME}/gsCore )
+    # For zsExport.h
+    install(FILES ${PROJECT_BINARY_DIR}/zsCore/zsExport.h
+            DESTINATION include/${PROJECT_NAME}/zsCore )
 
-    # For gsLinearAlgebra.h
+    # For zsLinearAlgebra.h
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/Eigen
             DESTINATION include/${PROJECT_NAME}
             PATTERN "*.txt" EXCLUDE
             PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
-    # For gsCmdLine.h
+    # For zsCmdLine.h
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/external/tclap
             DESTINATION include/${PROJECT_NAME}
             FILES_MATCHING
@@ -101,7 +101,7 @@ if(ZSIM_BUILD_LIB)
     install(FILES ${PROJECT_SOURCE_DIR}/external/eiquadprog.hpp
             DESTINATION include/${PROJECT_NAME})
 
-    # For gsXmlUtils.h
+    # For zsXmlUtils.h
     install(FILES ${PROJECT_SOURCE_DIR}/external/rapidxml/rapidxml.hpp
             ${PROJECT_SOURCE_DIR}/external/rapidxml/rapidxml_print.hpp
             DESTINATION include/${PROJECT_NAME}/rapidxml/ )
@@ -115,14 +115,14 @@ if(ZSIM_BUILD_LIB)
     #        PATTERN ".svn" EXCLUDE
     #        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
-    # For gsConfig.h
+    # For zsConfig.h
     install(DIRECTORY ${ZSIM_DATA_DIR} DESTINATION share/zsimdata)
     # todo: search environment variable as well
     set(ZSIM_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/zsimdata/)
-    configure_file ("${PROJECT_SOURCE_DIR}/src/gsCore/gsConfig.h.in"
-            "${PROJECT_BINARY_DIR}/gsCore/gsConfig_install.h" )
-    install(FILES ${PROJECT_BINARY_DIR}/gsCore/gsConfig_install.h
-            DESTINATION include/${PROJECT_NAME}/gsCore/ RENAME gsConfig.h)
+    configure_file ("${PROJECT_SOURCE_DIR}/src/zsCore/zsConfig.h.in"
+            "${PROJECT_BINARY_DIR}/zsCore/zsConfig_install.h" )
+    install(FILES ${PROJECT_BINARY_DIR}/zsCore/zsConfig_install.h
+            DESTINATION include/${PROJECT_NAME}/zsCore/ RENAME zsConfig.h)
 
     # Install cmake files
     install(FILES

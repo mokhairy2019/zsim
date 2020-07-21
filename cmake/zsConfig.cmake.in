@@ -1,5 +1,5 @@
 ######################################################################
-## zsimConfig.cmake --- zsim CMake Configuration file
+## zsConfig.cmake --- zsim CMake Configuration file
 ## This file is part of the G+Smo library.
 ##
 ## Author: Mohamed Mahmoud
