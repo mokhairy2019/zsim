@@ -27,7 +27,9 @@ namespace zsim
 }
 
 /*---------- core ----------------*/
+#include "zsCore/zsForwardDeclarations.h"
 #include "zsCore/zsLinearAlgebra.h"
 #include "zsCore/zsEngngModel.h"
+
 
 #endif //ZSIM_ZSIM_H

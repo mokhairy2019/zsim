@@ -5,10 +5,11 @@
 #ifndef ZSIM_ZSINTARRAY_H
 #define ZSIM_ZSINTARRAY_H
 
+namespace zsim {
+    class zsIntArray {
 
-class zsIntArray {
-
-};
+    };
+}
 
 
 #endif //ZSIM_ZSINTARRAY_H

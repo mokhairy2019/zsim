@@ -21,9 +21,9 @@
 #include <limits>
 
 #include <zsCore/zsConfig.h>
-//#include <zsCore/zsDebug.h>
+#include <zsCore/zsDebug.h>
 //#include <zsCore/zsExport.h>  // included by zsMemory.h
-//#include <zsCore/zsMemory.h>
+#include <zsCore/zsMemory.h>
 //#include <zsUtils/zsUtils.h>
 
 namespace zsim
@@ -51,6 +51,11 @@ namespace zsim
     class zsCommunicatorBuff;
     class zsProcessCommunicator;
     class zsUnknownNumberingScheme;
+
+
+    template<class T = real_t, int _Rows=-1, int _Cols=-1,
+            int _Options  = 0|((_Rows==1 && _Cols!=1)?0x1:0)> class zsMatrix;
+    template<class T = real_t, int _Rows=-1, int _Options = 0> class zsVector;
 
 } // end namespace zsim
 

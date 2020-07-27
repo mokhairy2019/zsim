@@ -1,3 +1,4 @@
+/*
 #include "nummet.h"
 #include "sparsemtrx.h"
 #include "zsEngngModel.h"
@@ -32,22 +33,24 @@
 #include "unknownnumberingscheme.h"
 #include "contact/contactmanager.h"
 
+#include <cstdio>
+#include <cstdarg>
+#include <ctime>
+
 #ifdef __PARALLEL_MODE
 #include "problemcomm.h"
  #include "processcomm.h"
  #include "loadbalancer.h"
 #endif
 
-#include <cstdio>
-#include <cstdarg>
-#include <ctime>
+
 
 
 namespace zsim {
     zsEngngModel :: zsEngngModel(int i, zsEngngModel *_master) : domainNeqs(), domainPrescribedNeqs(),
                                                                  exportModuleManager(this),
-                                                                initModuleManager(this),
-                                                               monitorManager(this)
+                                                                 initModuleManager(this),
+                                                                 monitorManager(this)
     {
         suppressOutput = false;
 
@@ -62,7 +65,7 @@ namespace zsim {
         profileOpt = false;
         nonLinFormulation = UNKNOWN;
 
-        outputStream          = NULL;
+        outputStream          = nullptr;
 
         referenceFileName     = "";
 
@@ -76,7 +79,7 @@ namespace zsim {
         if ( master ) {
             context = master->giveContext();
         } else {
-            context = new EngngModelContext();
+            context = new zsEngngModelContext();
         }
 
         parallelFlag = 0;
@@ -101,7 +104,7 @@ namespace zsim {
     zsEngngModel :: ~zsEngngModel()
     {
         // master deletes the context
-        if ( master == NULL ) {
+        if ( master == nullptr ) {
             delete context;
         }
 
@@ -127,8 +130,7 @@ namespace zsim {
     }
 
 
-    void
-    zsEngngModel :: Instanciate_init()
+    void zsEngngModel :: Instanciate_init()
     {
         // create domains
         domainNeqs.clear();
@@ -247,7 +249,9 @@ namespace zsim {
         // fprintf (stderr, "Parallel mode is %d\n", parallelFlag);
 
 #ifdef __PARALLEL_MODE
-        /* Load balancing support */
+        */
+/* Load balancing support *//*
+
     _val = 0;
     IR_GIVE_OPTIONAL_FIELD(ir, _val, _IFT_EngngModel_loadBalancingFlag);
     loadBalancingFlag = _val;
@@ -2192,6 +2196,7 @@ zsEngngModel :: unpackDofManagers(ArrayWithNumbering *destData, zsProcessCommuni
 
 #endif
 } // end namespace zsim
+*/
 /*
  *
  *                 #####    #####   ######  ######  ###   ###
@@ -2224,7 +2229,8 @@ zsEngngModel :: unpackDofManagers(ArrayWithNumbering *destData, zsProcessCommuni
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
+ *//*
+
 
 // Milan ?????????????????
 //#include "gpinitmodule.h"
@@ -2482,7 +2488,9 @@ namespace zsim {
         // fprintf (stderr, "Parallel mode is %d\n", parallelFlag);
 
 #ifdef __PARALLEL_MODE
-        /* Load balancing support */
+        */
+/* Load balancing support *//*
+
     _val = 0;
     IR_GIVE_OPTIONAL_FIELD(ir, _val, _IFT_EngngModel_loadBalancingFlag);
     loadBalancingFlag = _val;
@@ -4427,3 +4435,4 @@ zsEngngModel :: unpackDofManagers(ArrayWithNumbering *destData, zsProcessCommuni
 
 #endif
 } // end namespace zsim
+*/
