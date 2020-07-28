@@ -63,7 +63,7 @@ if  (${ZSIM_BUILD_RHINOPLUGINS})
     message ("  ZSIM_BUILD_RHINOPLUGINS ${ZSIM_BUILD_RHINOPLUGINS}")
 endif()
 
-option(ZSIM_BUILD_UNITTESTS     "Build unittests"           false  )
+option(ZSIM_BUILD_UNITTESTS     "Build unittests"           true  )
 if  (${ZSIM_BUILD_UNITTESTS})
     message ("  ZSIM_BUILD_UNITTESTS   ${ZSIM_BUILD_UNITTESTS}")
 endif()

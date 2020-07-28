@@ -7,7 +7,7 @@
 
 project(unittests)
 
-set(CMAKE_DIRECTORY_LABELS "${PROJECT_NAME}") #CMake 3.10
+#[[set(CMAKE_DIRECTORY_LABELS "${PROJECT_NAME}") #CMake 3.10]]
 
 include(zsFetch)
 zsim_fetch_module(zsUnitTest

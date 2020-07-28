@@ -97,8 +97,8 @@ namespace zsim{
 
 #include <zsMatrix/zsMatrixBlockView.h>
 #include <zsMatrix/zsMatrix.h>
-/*#include <zsMatrix/zsVector.h>
-#include <zsMatrix/zsAsMatrix.h>
+#include <zsMatrix/zsVector.h>
+/*#include <zsMatrix/zsAsMatrix.h>
 #include <zsMatrix/zsSparseMatrix.h>
 #include <zsMatrix/zsSparseVector.h>
 #include <zsMatrix/zsSparseSolver.h>
