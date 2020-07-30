@@ -10,8 +10,7 @@
 //#define eigen_assert( cond ) GISMO_ASSERT( cond, "" )
 
 // Plugin provides extra members
-//#define EIGEN_MATRIXBASE_PLUGIN <zsMatrix/zsMatrixAddons.h>
-
+#define EIGEN_MATRIXBASE_PLUGIN <zsMatrix/zsMatrixAddons.h>
 #include <zsMatrix/zsEigenDeclarations.h>
 
 #include <Eigen/Core>
@@ -29,9 +28,9 @@
 #include <Eigen/StdVector>
 
 // Extra Eigen code
-/*#include <zsMatrix/Adjugate.h>
+#include <zsMatrix/Adjugate.h>
 #include <zsMatrix/BlockDiag.h>
-#include <zsMatrix/BlockTranspose.h>*/
+#include <zsMatrix/BlockTranspose.h>
 //#include <zsMatrix/RowSelection.h>
 
 #ifdef GISMO_WITH_SUPERLU
@@ -98,10 +97,10 @@ namespace zsim{
 #include <zsMatrix/zsMatrixBlockView.h>
 #include <zsMatrix/zsMatrix.h>
 #include <zsMatrix/zsVector.h>
-/*#include <zsMatrix/zsAsMatrix.h>
+#include <zsMatrix/zsAsMatrix.h>
 #include <zsMatrix/zsSparseMatrix.h>
 #include <zsMatrix/zsSparseVector.h>
-#include <zsMatrix/zsSparseSolver.h>
+/*#include <zsMatrix/zsSparseSolver.h>
 #include <zsMatrix/zsPoint.h>*/
 
 #endif //ZSIM_ZSLINEARALGEBRA_H

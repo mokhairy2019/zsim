@@ -72,7 +72,7 @@ int main(int argcm, char** argv){
     // We can initialize a matrix using other matrices by "<<"
     // Note that AAA must have the right size!
     zsMatrix<> AAA(3,12);
-    AAA << A, A.transpose(), A.adjoint().eval(), A;
+    AAA << A, A.transpose(), A.adjugate(), A;
     zsInfo << "A block matrix containing [A, A.tranpose(), A.adjugate(), A] :\n"<< AAA  << "\n";
     AAA.blockTransposeInPlace(3);
     zsInfo << "Block-wise transposition of the above:\n"<< AAA  << "\n";
@@ -116,7 +116,8 @@ int main(int argcm, char** argv){
 
     zsInfo << "Reverse matrix:\n"<< A.colwise().reverse() << "\n";
 
- /*   zsSparseMatrix<> B(3,3);
+
+    zsSparseMatrix<> B(3,3);
     B.insert(0,0) = 1 ;
     B.insert(1,1) = 2 ;
     B.insert(2,2) = 3 ;
@@ -168,7 +169,7 @@ int main(int argcm, char** argv){
     zsInfo << " Eigenvalues of symmetric matrix (A's upper triangular part): "
            << A.selfadjointView<Upper>().eigenvalues().transpose()  << "\n";
 
-#endif*/
+#endif
 
     return 0;
 }

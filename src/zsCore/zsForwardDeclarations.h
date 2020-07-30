@@ -57,6 +57,23 @@ namespace zsim
             int _Options  = 0|((_Rows==1 && _Cols!=1)?0x1:0)> class zsMatrix;
     template<class T = real_t, int _Rows=-1, int _Options = 0> class zsVector;
 
+    template<class T= real_t, int _Rows=-1, int _Cols=-1> class zsAsConstMatrix;
+    template<class T= real_t, int _Rows=-1, int _Cols=-1> class zsAsMatrix;
+
+    template<class T= real_t, int _Rows=-1> class zsAsVector;
+    template<class T= real_t, int _Rows=-1> class zsAsConstVector;
+
+    template<class T = real_t> class zsVector3d;
+
+    template<typename T=real_t, int _Options=0, typename _Index = index_t>
+    class zsSparseMatrix;
+
+    template<typename T=real_t, int _Options=0, typename _Index = index_t>
+    class zsSparseVector;
+
+    template <class T=real_t>                class zsSparseEntries;
+
+
 } // end namespace zsim
 
 #endif //ZSIM_ZSFORWARDDECLARATIONS_H

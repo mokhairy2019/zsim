@@ -5,7 +5,7 @@
     This file is part of the G+Smo library.
 
     Author(s): Mohamed Mahmoud
-*//*
+*/
 
 
 namespace Eigen
@@ -22,4 +22,4 @@ namespace Eigen
     template<typename XprType, typename IndicesType> class RowSelection;
 
 }
-*/
+
