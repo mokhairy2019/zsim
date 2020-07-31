@@ -1,10 +1,7 @@
 /** @file Adjugate.h
-
-    @brief Adjugate extension for Eigen matrix objects
-
-    Author: Mohamed Mahmoud
-
-*/
+ * @brief Adjugate extension for Eigen matrix objects
+ * Author: Mohamed Mahmoud
+ */
 
 namespace Eigen { 
 
