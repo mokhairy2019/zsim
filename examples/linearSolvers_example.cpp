@@ -18,7 +18,7 @@ using namespace zsim;
 //This matrix is equivalent to discretizing the 1D Poisson equation with homogenius
 //Dirichlet boundary condition using a finite difference method. It is a SPD matrix.
 //The solution is sin(pi*x);
-void poissonDiscretization(gsSparseMatrix<> &mat, gsMatrix<> &rhs, index_t N)
+void poissonDiscretization(zsSparseMatrix<> &mat, zsMatrix<> &rhs, index_t N)
 {
 rhs.setZero(N,1);
 
@@ -49,27 +49,129 @@ mat.makeCompressed();
 
 //Print out information of the iterative solver
 template<typename SolverType>
-void gsIterativeSolverInfo(const SolverType &method,
+void zsIterativeSolverInfo(const SolverType &method,
 real_t error, double time, bool& succeeded )
 {
-gsInfo << method.detail();
-gsInfo << " Computed res. error  : " << error << "\n";
-gsInfo << " Time to solve:       : " << time << "\n";
+zsInfo << method.detail();
+zsInfo << " Computed res. error  : " << error << "\n";
+zsInfo << " Time to solve:       : " << time << "\n";
 if ( method.error() <= method.tolerance() && error <= method.tolerance() )
 {
-gsInfo <<" Test passed.\n";
+zsInfo <<" Test passed.\n";
 }
 else
 {
-gsInfo <<" TEST FAILED!\n";
+zsInfo <<" TEST FAILED!\n";
 succeeded = false;
 }
 }
 
 int main(int argc, char *argv[])
 {
+    bool succeeded = true;
 
-    return succeeded ? EXIT_SUCCESS : EXIT_FAILURE;
+    index_t N = 100;
+    //Tolerance
+    real_t tol = std::pow(10.0, - REAL_DIG * 0.75);
+
+    zsSparseMatrix<> mat;
+    zsMatrix<> rhs;
+
+    //Assembly of 1D poission equaiton
+    poissonDiscretization(mat, rhs, N);
+
+    //The minimal residual implementation requires a preconditioner.
+    //We initialize an identity preconditioner (does nothing).
+    //TODO implament the linear operatoer later in zsSolvers
+    //zsLinearOperator<>::Ptr preConMat = zsIdentityOp<>::make(N);
+
+    //TODO / implement the timer class
+    zsMatrix<> x0;
+
+#ifndef GISMO_WITH_MPQ
+    //Maximum number of iterations
+    index_t maxIters = 3*N;
+    ///----------------------EIGEN-ITERATIVE-SOLVERS----------------------///
+    zsInfo << "\nTesting Eigen's interative solvers:\n";
+
+    zsSparseSolver<>::CGIdentity EigenCGIsolver;
+    EigenCGIsolver.setMaxIterations(maxIters);
+    EigenCGIsolver.setTolerance(tol);
+    zsInfo << "\nEigen's CG + identity prec.: Started solving... ";
+    clock.restart();
+    EigenCGIsolver.compute(mat);
+    x0 = EigenCGIsolver.solve(rhs);
+    zsInfo << "done.\n";
+    zsIterativeSolverInfo(EigenCGIsolver, (mat*x0-rhs).norm()/rhs.norm(), clock.stop(), succeeded);
+
+  /*  zsSparseSolver<>::CGDiagonal EigenCGDsolver;
+    EigenCGDsolver.setMaxIterations(maxIters);
+    EigenCGDsolver.setTolerance(tol);
+    zsInfo << "\nEigen's CG + diagonal prec.: Started solving... ";
+    clock.restart();
+    EigenCGDsolver.compute(mat);
+    x0 = EigenCGDsolver.solve(rhs);
+    zsInfo << "done.\n";
+    zsIterativeSolverInfo(EigenCGDsolver, (mat*x0-rhs).norm()/rhs.norm(), clock.stop(), succeeded);
+
+    zsSparseSolver<>::BiCGSTABIdentity EigenBCGIsolver;
+    EigenBCGIsolver.setMaxIterations(maxIters);
+    EigenBCGIsolver.setTolerance(tol);
+    zsInfo << "\nEigen's bi conjugate gradient stabilized + identity prec.: Started solving... ";
+    clock.restart();
+    EigenBCGIsolver.compute(mat);
+    x0 = EigenBCGIsolver.solve(rhs);
+    zsInfo << "done.\n";
+    zsIterativeSolverInfo(EigenBCGIsolver, (mat*x0-rhs).norm()/rhs.norm(), clock.stop(), succeeded);
+
+    zsSparseSolver<>::BiCGSTABDiagonal EigenBCGDsolver;
+    EigenBCGDsolver.setMaxIterations(maxIters);
+    EigenBCGDsolver.setTolerance(tol);
+    zsInfo << "\nEigen's bi conjugate gradient stabilized solver + diagonal prec.: Started solving... ";
+    clock.restart();
+    EigenBCGDsolver.compute(mat);
+    x0 = EigenBCGDsolver.solve(rhs);
+    zsInfo << "done.\n";
+    zsIterativeSolverInfo(EigenBCGDsolver, (mat*x0-rhs).norm()/rhs.norm(), clock.stop(), succeeded);
+
+    zsSparseSolver<>::BiCGSTABILUT EigenBCGILUsolver;
+    //EigenBCGILUsolver.preconditioner().setFillfactor(1);
+    EigenBCGILUsolver.setMaxIterations(maxIters);
+    EigenBCGILUsolver.setTolerance(tol);
+    zsInfo << "\nEigen's bi conjugate gradient stabilized solver + ILU prec.: Started solving... ";
+    clock.restart();
+    EigenBCGILUsolver.compute(mat);
+    x0 = EigenBCGILUsolver.solve(rhs);
+    zsInfo << "done.\n";
+    zsIterativeSolverInfo(EigenBCGILUsolver, (mat*x0-rhs).norm()/rhs.norm(), clock.stop(), succeeded);
+
+    ///----------------------EIGEN-DIRECT-SOLVERS----------------------///
+    zsSparseSolver<>::SimplicialLDLT EigenSLDLTsolver;
+    zsInfo << "\nEigen's Simplicial LDLT: Started solving... ";
+    clock.restart();
+    EigenSLDLTsolver.compute(mat);
+    x0 = EigenSLDLTsolver.solve(rhs);
+    zsInfo << "done.\n";
+    zsInfo << "Eigen's Simplicial LDLT: Time to solve       : " << clock.stop() << "\n";
+
+    zsSparseSolver<>::QR solverQR;
+    zsInfo << "\nEigen's QR: Started solving... ";
+    clock.restart();
+    solverQR.compute(mat);
+    x0 = solverQR.solve(rhs);
+    zsInfo << "done.\n";
+    zsInfo << "Eigen's QR: Time to solve       : " << clock.stop() << "\n";*/
+
+#endif
+
+   /* zsSparseSolver<>::LU solverLU;
+    zsInfo << "\nEigen's LU: Started solving... ";
+    clock.restart();
+    solverLU.compute(mat);
+    x0 = solverLU.solve(rhs);
+    zsInfo << "done.\n";
+    zsInfo << "Eigen's LU: Time to solve       : " << clock.stop() << "\n";
+    return succeeded ? EXIT_SUCCESS : EXIT_FAILURE;*/
 }
 
 

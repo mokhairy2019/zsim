@@ -5,8 +5,11 @@
 #ifndef ZSIM_ZSINTARRAY_H
 #define ZSIM_ZSINTARRAY_H
 
+#include "zsForwardDeclarations.h"
+#include "zsLinearAlgebra.h"
+
 namespace zsim {
-    class zsIntArray {
+    class zsIntArray : public zsVector<index_t> {
 
     };
 }

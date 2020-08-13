@@ -1,6 +1,3 @@
-//
-// Created by Mokhairy on 7/19/2020.
-//
 /** @file zsim.h
 
     @brief Main header to be included by clients using the zsim library.
