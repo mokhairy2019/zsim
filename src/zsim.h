@@ -28,5 +28,8 @@ namespace zsim
 #include "zsCore/zsLinearAlgebra.h"
 #include "zsCore/zsEngngModel.h"
 
+/*-----------Utilities-------------*/
+#include "zsUtils/zsTimer.h"
+
 
 #endif //ZSIM_ZSIM_H

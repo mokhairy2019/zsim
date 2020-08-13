@@ -94,7 +94,7 @@ namespace zsim {
 
         virtual VectorT solve (const VectorT& rhs) const = 0 ;
 
-        virtual bool succed()                       const = 0 ;
+        virtual bool succeed()                       const = 0 ;
 
         /// Prints the object as a string.
         virtual std::ostream &print(std::ostream &os) const

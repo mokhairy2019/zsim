@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     //TODO implament the linear operatoer later in zsSolvers
     //zsLinearOperator<>::Ptr preConMat = zsIdentityOp<>::make(N);
 
-    //TODO / implement the timer class
+    zsStopwatch clock;
     zsMatrix<> x0;
 
 #ifndef GISMO_WITH_MPQ
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     zsInfo << "done.\n";
     zsIterativeSolverInfo(EigenCGIsolver, (mat*x0-rhs).norm()/rhs.norm(), clock.stop(), succeeded);
 
-  /*  zsSparseSolver<>::CGDiagonal EigenCGDsolver;
+    zsSparseSolver<>::CGDiagonal EigenCGDsolver;
     EigenCGDsolver.setMaxIterations(maxIters);
     EigenCGDsolver.setTolerance(tol);
     zsInfo << "\nEigen's CG + diagonal prec.: Started solving... ";
@@ -160,18 +160,18 @@ int main(int argc, char *argv[])
     solverQR.compute(mat);
     x0 = solverQR.solve(rhs);
     zsInfo << "done.\n";
-    zsInfo << "Eigen's QR: Time to solve       : " << clock.stop() << "\n";*/
+    zsInfo << "Eigen's QR: Time to solve       : " << clock.stop() << "\n";
 
 #endif
 
-   /* zsSparseSolver<>::LU solverLU;
+    zsSparseSolver<>::LU solverLU;
     zsInfo << "\nEigen's LU: Started solving... ";
     clock.restart();
     solverLU.compute(mat);
     x0 = solverLU.solve(rhs);
     zsInfo << "done.\n";
     zsInfo << "Eigen's LU: Time to solve       : " << clock.stop() << "\n";
-    return succeeded ? EXIT_SUCCESS : EXIT_FAILURE;*/
+    return succeeded ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 
