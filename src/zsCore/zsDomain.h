@@ -5,11 +5,13 @@
 #ifndef ZSIM_ZSDOMAIN_H
 #define ZSIM_ZSDOMAIN_H
 
+namespace zsim {
+    class ZSIM_EXPORT zsDomain {
 
-class zsDomain {
 
+    };
 
-};
+}
 
 
 #endif //ZSIM_ZSDOMAIN_H

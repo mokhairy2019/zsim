@@ -5,10 +5,12 @@
 #ifndef ZSIM_ZSDOFIDITEM_H
 #define ZSIM_ZSDOFIDITEM_H
 
+namespace zsim {
+    enum zsDofIDItem {
 
-enum zsDofIDItem {
+    };
 
-};
+}
 
 
 #endif //ZSIM_ZSDOFIDITEM_H

@@ -31,72 +31,73 @@
 //#include "zsParallelContext.h"
 //#include "unknownnumberingscheme.h"
 //#include "contact/contactmanager.h"
-//
-//#ifdef __PARALLEL_MODE
-//#include "problemcomm.h"
-// #include "processcomm.h"
-// #include "loadbalancer.h"
-//#endif
-//
-//#include <cstdio>
-//#include <cstdarg>
-//#include <ctime>
-//
-//
-//namespace zsim {
-//    zsEngngModel :: zsEngngModel(int i, zsEngngModel *_master) : domainNeqs(), domainPrescribedNeqs(),
-//                                                                 exportModuleManager(this),
-//                                                                 initModuleManager(this),
-//                                                                 monitorManager(this)
-//    {
-//        suppressOutput = false;
-//
-//        number = i;
-//        numberOfSteps = 0;
-//        numberOfEquations = 0;
-//        numberOfPrescribedEquations = 0;
-//        renumberFlag = false;
-//        equationNumberingCompleted = 0;
-//        ndomains = 0;
-//        nMetaSteps = 0;
-//        profileOpt = false;
-//        nonLinFormulation = UNKNOWN;
-//
-//        outputStream          = NULL;
-//
-//        referenceFileName     = "";
-//
-//        contextOutputMode     = COM_NoContext;
-//        contextOutputStep     = 0;
-//        pMode                 = _processor;  // for giveContextFile()
-//        pScale                = macroScale;
-//
-//        master                = _master; // master mode by default
-//        // create context if in master mode; otherwise request context from master
-//        if ( master ) {
-//            context = master->giveContext();
-//        } else {
-//            context = new EngngModelContext();
-//        }
-//
-//        parallelFlag = 0;
-//        numProcs = 1;
-//        rank = 0;
-//        nonlocalExt = 0;
-//#ifdef __PARALLEL_MODE
-//        loadBalancingFlag = false;
-//    force_load_rebalance_in_first_step = false;
-//    lb = NULL;
-//    lbm = NULL;
-//    communicator = NULL;
-//    nonlocCommunicator = NULL;
-//    commBuff = NULL;
-// #ifdef __USE_MPI
-//    comm = MPI_COMM_SELF;
-// #endif
-//#endif
-//    }
-//
+
+#ifdef __PARALLEL_MODE
+#include "problemcomm.h"
+#include "processcomm.h"
+#include "loadbalancer.h"
+#endif
+
+#include <cstdio>
+#include <cstdarg>
+#include <ctime>
+#include "zsEngngModel.h"
+
+
+namespace zsim {
+   zsEngngModel :: zsEngngModel(int i, zsEngngModel *_master) : domainNeqs(), domainPrescribedNeqs(),
+                                                                exportModuleManager(this),
+                                                                initModuleManager(this),
+                                                                monitorManager(this)
+   {
+       suppressOutput = false;
+
+       number = i;
+       numberOfSteps = 0;
+       numberOfEquations = 0;
+       numberOfPrescribedEquations = 0;
+       renumberFlag = false;
+       equationNumberingCompleted = 0;
+       ndomains = 0;
+       nMetaSteps = 0;
+       profileOpt = false;
+       nonLinFormulation = UNKNOWN;
+
+       outputStream          = NULL;
+
+       referenceFileName     = "";
+
+       contextOutputMode     = COM_NoContext;
+       contextOutputStep     = 0;
+       pMode                 = _processor; 
+       pScale                = macroScale;
+
+       master                = _master; // master mode by default
+       // create context if in master mode; otherwise request context from master
+       if ( master ) {
+           context = master->giveContext();
+       } else {
+           context = new zsEngngModelContext();
+       }
+
+       parallelFlag = 0;
+       numProcs = 1;
+       rank = 0;
+       nonlocalExt = 0;
+#ifdef __PARALLEL_MODE
+       loadBalancingFlag = false;
+   force_load_rebalance_in_first_step = false;
+   lb = NULL;
+   lbm = NULL;
+   communicator = NULL;
+   nonlocCommunicator = NULL;
+   commBuff = NULL;
+#ifdef __USE_MPI
+   comm = MPI_COMM_SELF;
+#endif
+#endif
+   }
+
 //
 //    zsEngngModel :: ~zsEngngModel()
 //    {
@@ -4426,4 +4427,6 @@
 //}
 //
 //#endif
-//} // end namespace zsim
+} // end namespace zsim
+
+

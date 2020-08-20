@@ -25,8 +25,58 @@
 #include "zsVarScaleType.h"
 #include "zsElement.h"
 #include "zsField.h"
+#include "zsFieldManager.h"
+#include "zsMetaStep.h"
+#include "zsTimeStep.h"
+#include "zsErrorEstimator.h"
+#include "zsDomain.h"
 
 namespace zsim {
+    // Engineering models objects
+    class zsEngngModelContext;
+    class zsDomain;
+    class zsTimeStep;
+    class zsDof;
+    class zsDofManager;
+    class zsDataReader;
+    class zsDataStream;
+    class zsErrorEstimator;
+    class zsMetaStep;
+    class zsMaterialInterface;
+    class zsSparseMtrx;
+    class zsNumericalMethod;
+    class zsFloatMatrix;
+    class zsFloatArray;
+    class zsLoadBalancer;
+    class zsLoadBalancerMonitor;
+    class zsGraphicContext;
+    class zsProblemCommunicator;
+    class zsProcessCommunicatorBuff;
+    class zsCommunicatorBuff;
+    class zsProcessCommunicator;
+    class zsUnknownNumberingScheme;
+    class zsInputRecord;
+
+    /**
+     * Class EngngModelContext represents a context, which is shared by all problem engng sub-models.
+     * In principle every problem (represented by the EngngModel class) can be made part of more
+     * complex problem, providing only part of the solution, possibly depending on the results of
+     * other sub-problems. Typical example is staggered heat and structural analysis.
+     * The context provides the common (shared) resources within the problem. The context is created by the
+     * master problem (the class representing staggered problem, for example). The subproblems are
+     * then created in so-called maintained (or slave) mode and they request the context from master.
+     */
+    class ZSIM_EXPORT zsEngngModelContext
+            {
+                    protected:
+                    /// Common fieldManager providing shared field register for the problem.
+                    zsFieldManager fieldManager;
+
+                    public:
+                    zsEngngModelContext() : fieldManager() { }
+                    zsFieldManager *giveFieldManager() { return & ( this->fieldManager ); }
+            };
+
 
     /**
      * Abstract base class representing the "problem" under consideration.
@@ -96,7 +146,7 @@ namespace zsim {
         };
     protected:
         ///number of receiver domains.
-        index_t domains{};
+        index_t ndomains;
         /// List of problem domains.
         std :: vector< std :: unique_ptr< zsDomain > > domainList;
         /// Total number of time steps.
@@ -211,9 +261,9 @@ namespace zsim {
 
     public:
         /**
-         * Constructor. Creates Engng model with number i.
+         * Constructor. Creates Engng model with number i belonging to domain d.
          */
-        zsEngngModel(int i, zsEngngModel * _master = NULL);
+        zsEngngModel(index_t i, zsEngngModel * _master = NULL);
         /// Destructor.
         virtual ~zsEngngModel();
         zsEngngModel(const zsEngngModel &) = delete;
@@ -224,26 +274,26 @@ namespace zsim {
          * @param n Pointer to n-th domain is returned.
          * @return zsDomain number n.
          */
-        zsDomain *giveDomain(int n);
+        zsDomain *giveDomain(index_t n);
         /**
          * Sets i-th domain of receiver. Given domain is assumed to be owned (and deleted) by receiver.
          * The old domain, if defined, will be deleted.
          * @param i zsDomain index.
          * @param ptr Pointer to valid domain instance.
          */
-        void setDomain(int i, zsDomain *ptr, bool iDeallocateOld = true);
+        void setDomain(index_t i, zsDomain *ptr, bool iDeallocateOld = true);
         /// Returns number of domains in problem.
-        int giveNumberOfDomains() { return (int)domainList.size(); }
+        index_t giveNumberOfDomains() { return (index_t)domainList.size(); }
 
         const std :: string &giveDescription() const { return simulationDescription; }
         const time_t &giveStartTime() { return startTime; }
         bool giveSuppressOutput() const { return suppressOutput; }
 
         /** Service for accessing zsErrorEstimator corresponding to particular domain */
-        virtual zsErrorEstimator *giveDomainErrorEstimator(int n) { return defaultErrEstimator.get(); }
+        virtual zsErrorEstimator *giveDomainErrorEstimator(index_t n) { return defaultErrEstimator.get(); }
         /** Returns material interface representation for given domain */
-        virtual zsMaterialInterface *giveMaterialInterface(int n) { return nullptr; }
-        void setNumberOfEquations(int id, int neq) {
+        virtual zsMaterialInterface *giveMaterialInterface(index_t n) { return nullptr; }
+        void setNumberOfEquations(index_t id, index_t neq) {
             numberOfEquations = neq;
             domainNeqs.at(id) = neq;
         }
@@ -274,7 +324,7 @@ namespace zsim {
         /**
          * Returns domain context output step.
          */
-        int giveContextOutputStep() { return contextOutputStep; }
+        index_t giveContextOutputStep() { return contextOutputStep; }
         /**
          * Sets context output mode of receiver.
          * @param contextMode domain context mode.
@@ -286,7 +336,7 @@ namespace zsim {
          * setting contextOutputStep to given value.
          * @param cStep new context output step
          */
-        void setUDContextOutputMode(int cStep)
+        void setUDContextOutputMode(index_t cStep)
         {
             contextOutputMode = COM_UserDefined;
             contextOutputStep = cStep;
@@ -322,7 +372,7 @@ namespace zsim {
         /**
          * Returns the real and user time for the analysis.
          */
-        void giveAnalysisTime(int &rhrs, int &rmin, int &rsec, int &uhrs, int &umin, int &usec);
+        void giveAnalysisTime(index_t &rhrs, index_t &rmin, index_t &rsec, index_t &uhrs, index_t &umin, index_t &usec);
         /**
          * Performs analysis termination after finishing analysis.
          */
@@ -379,13 +429,13 @@ namespace zsim {
          * This process should typically include restoring old solution, instanciating newly
          * generated domain(s) and by mapping procedure.
          */
-        virtual int initializeAdaptive(int tStepNumber) { return 0; }
+        virtual index_t initializeAdaptive(index_t tStepNumber) { return 0; }
 
         /**
          * Returns number of equations for given domain in active (current time step) time step.
          * The numbering scheme determines which system the result is requested for.
          */
-        virtual int giveNumberOfDomainEquations(int di, const zsUnknownNumberingScheme &num);
+        virtual index_t giveNumberOfDomainEquations(index_t di, const zsUnknownNumberingScheme &num);
 
         // management components
         /**
@@ -413,9 +463,9 @@ namespace zsim {
         virtual double giveLoadLevel() { return 1.0; }
 
         /// Only relevant for eigen value analysis. Otherwise returns zero.
-        virtual double giveEigenValue(int eigNum) { return 0.0; }
+        virtual double giveEigenValue(index_t eigNum) { return 0.0; }
         /// Only relevant for eigen value  analysis. Otherwise does noting.
-        virtual void setActiveVector(int i) { }
+        virtual void setActiveVector(index_t i) { }
         /**
          * Exchanges necessary remote DofManagers data.
          * @todo The name and description of this function is misleading, the function really just accumulates the total values for shared "equations".
@@ -423,7 +473,7 @@ namespace zsim {
          * @param ExchangeTag Exchange tag used by communicator.
          * @return Nonzero if successful.
          */
-        int updateSharedDofManagers(zsFloatArray &answer, const zsUnknownNumberingScheme &s, int ExchangeTag);
+        index_t updateSharedDofManagers(zsFloatArray &answer, const zsUnknownNumberingScheme &s, index_t ExchangeTag);
         /**
          * Exchanges necessary remote element data with remote partitions. The receiver's nonlocalExt flag must be set.
          * Uses receiver nonlocCommunicator to perform the task using packRemoteElementData and unpackRemoteElementData
@@ -431,12 +481,12 @@ namespace zsim {
          * @param ExchangeTag Exchange tag used by communicator.
          * @return Nonzero if successful.
          */
-        int exchangeRemoteElementData(int ExchangeTag);
+        index_t exchangeRemoteElementData(index_t ExchangeTag);
         /**
          * Returns number of iterations that was required to reach equilibrium - used for adaptive step length in
          * staggered problem
          */
-        virtual int giveCurrentNumberOfIterations() {return 1;}
+        virtual index_t giveCurrentNumberOfIterations() {return 1;}
 
 #ifdef __PARALLEL_MODE
         /// Returns the communication object of reciever.
@@ -452,7 +502,7 @@ namespace zsim {
      * @param processComm Corresponding process communicator.
      * @return Nonzero if successful.
      */
-    int packRemoteElementData(zsProcessCommunicator &processComm);
+    index_t packRemoteElementData(zsProcessCommunicator &processComm);
     /**
      * Unpacks data for remote elements (which are mirrors of remote partition's local elements).
      * Remote elements are introduced when nonlocal constitutive models are used, in order to
@@ -464,7 +514,7 @@ namespace zsim {
      * @param processComm Corresponding process communicator.
      * @return Nonzero if successful.
      */
-    int unpackRemoteElementData(zsProcessCommunicator &processComm);
+    index_t unpackRemoteElementData(zsProcessCommunicator &processComm);
     /**
      * Packing function for vector values of DofManagers. Packs vector values of shared/remote DofManagers
      * into send communication buffer of given process communicator.
@@ -472,7 +522,7 @@ namespace zsim {
      * @param src Source vector + equation numbering.
      * @return Nonzero if successful.
      */
-    int packDofManagers(ArrayWithNumbering *src, zsProcessCommunicator &processComm);
+    index_t packDofManagers(ArrayWithNumbering *src, zsProcessCommunicator &processComm);
     /**
      * Unpacking function for vector values of DofManagers . Unpacks vector of shared/remote DofManagers
      * from  receive communication buffer of given process communicator.
@@ -480,7 +530,7 @@ namespace zsim {
      * @param dest Destination vector + equation numbering.
      * @return Nonzero if successful.
      */
-    int unpackDofManagers(ArrayWithNumbering *dest, zsProcessCommunicator &processComm);
+    index_t unpackDofManagers(ArrayWithNumbering *dest, zsProcessCommunicator &processComm);
 
     zsProblemCommunicator *giveProblemCommunicator(EngngModelCommType t) {
         if ( t == PC_default ) {
@@ -498,7 +548,7 @@ namespace zsim {
          * Prints header, opens the outFileName, instanciate itself the receiver using
          * using virtual initializeFrom service and instanciates all problem domains.
          */
-        virtual int instanciateYourself(zsDataReader &dr, zsInputRecord &ir, const char *outFileName, const char *desc);
+        virtual index_t instanciateYourself(zsDataReader &dr, zsInputRecord &ir, const char *outFileName, const char *desc);
         /**
          * Initialization of the receiver state (opening the default output stream, empty domain creation,
          * initialization of parallel context, etc)
@@ -513,11 +563,11 @@ namespace zsim {
          * to extract particular field from record.*/
         virtual void initializeFrom(zsInputRecord &ir);
         /// Instanciate problem domains by calling their instanciateYourself() service
-        int instanciateDomains(zsDataReader &dr);
+        index_t instanciateDomains(zsDataReader &dr);
         /// Instanciate problem meta steps by calling their instanciateYourself() service
-        int instanciateMetaSteps(zsDataReader &dr);
+        index_t instanciateMetaSteps(zsDataReader &dr);
         /// Instanciate default metastep, if nmsteps is zero
-        virtual int instanciateDefaultMetaStep(zsInputRecord &ir);
+        virtual index_t instanciateDefaultMetaStep(zsInputRecord &ir);
 
         /**
          * Update receiver attributes according to step metaStep attributes.
@@ -619,7 +669,7 @@ namespace zsim {
         /** Returns number of first time step used by receiver.
          *  @param force when set to true then receiver reply is returned instead of master (default)
          */
-        virtual int giveNumberOfFirstStep(bool force = false) {
+        virtual index_t giveNumberOfFirstStep(bool force = false) {
             if ( master && (!force)) {
                 return master->giveNumberOfFirstStep();
             } else {
@@ -627,13 +677,13 @@ namespace zsim {
             }
         }
         /// Return number of meta steps.
-        int giveNumberOfMetaSteps() { return nMetaSteps; }
+        index_t giveNumberOfMetaSteps() { return nMetaSteps; }
         /// Returns the i-th meta step.
-        zsMetaStep *giveMetaStep(int i);
+        zsMetaStep *giveMetaStep(index_t i);
         /** Returns total number of steps.
          *  @param force when set to true then receiver reply is returned instead of master (default)
          */
-        int giveNumberOfSteps(bool force = false) {
+        index_t giveNumberOfSteps(bool force = false) {
             if ( master && (!force)) {
                 return master->giveNumberOfSteps();
             } else {
@@ -643,7 +693,7 @@ namespace zsim {
         /// Returns end of time interest (time corresponding to end of time integration).
         virtual double giveEndOfTimeOfInterest() { return 0.; }
         /// Returns the time step number, when initial conditions should apply.
-        int giveNumberOfTimeStepWhenIcApply() { return 0; }
+        index_t giveNumberOfTimeStepWhenIcApply() { return 0; }
         /// Returns reference to receiver's numerical method.
         virtual zsNumericalMethod *giveNumericalMethod(zsMetaStep *mStep) { return nullptr; }
         /// Returns receiver's export module manager.
@@ -658,7 +708,7 @@ namespace zsim {
          * The zsDofIDItem parameter allows to distinguish between several possible governing equations, that
          * can be numbered separately.
          */
-        virtual int giveNewEquationNumber(int domain, zsDofIDItem) { return ++domainNeqs.at(domain); }
+        virtual index_t giveNewEquationNumber(index_t domain, zsDofIDItem) { return ++domainNeqs.at(domain); }
         /**
          * Increases number of prescribed equations of receiver's domain and returns newly created equation number.
          * Used mainly by DofManagers to allocate their corresponding equation number if it
@@ -666,19 +716,19 @@ namespace zsim {
          * The zsDofIDItem parameter allows to distinguish between several possible governing equations, that
          * can be numbered separately.
          */
-        virtual int giveNewPrescribedEquationNumber(int domain, zsDofIDItem) { return ++domainPrescribedNeqs.at(domain); }
+        virtual index_t giveNewPrescribedEquationNumber(index_t domain, zsDofIDItem) { return ++domainPrescribedNeqs.at(domain); }
         /**
          * Returns the filename for the context file for the given step and version
          * @param tStepNumber Solution step number to store/restore.
          * @param stepVersion Version of step.
          */
-        std :: string giveContextFileName(int tStepNumber, int stepVersion) const;
+        std :: string giveContextFileName(index_t tStepNumber, index_t stepVersion) const;
         /**
          * Returns the filename for the given domain (used by adaptivity and restore)
          * @param domainNum zsDomain number.
          * @param domainSerNum zsDomain serial number.
          */
-        std :: string giveDomainFileName(int domainNum, int domainSerNum) const;
+        std :: string giveDomainFileName(index_t domainNum, index_t domainSerNum) const;
         virtual void updateComponent(zsTimeStep *tStep, zsNumericalCmpn cmpn,  zsDomain *d);
         /**
          * Updates the solution (guess) according to the new values.
@@ -722,7 +772,7 @@ namespace zsim {
          * Must be used if model supports changes of static system to assign new valid equation numbers
          * to dofManagers.
          */
-        virtual int forceEquationNumbering(int i);
+        virtual index_t forceEquationNumbering(index_t i);
         /**
          * Forces equation renumbering on all domains associated to engng model.
          * All equation numbers in all domains for all dofManagers are invalidated,
@@ -732,7 +782,7 @@ namespace zsim {
          * Must be used if model supports changes of static system to assign new valid equation numbers
          * to dofManagers.
          */
-        virtual int forceEquationNumbering();
+        virtual index_t forceEquationNumbering();
         /**
          * Indicates if zsEngngModel requires Dofs dictionaries to be updated.
          * If zsEngngModel does not support changes
@@ -752,7 +802,7 @@ namespace zsim {
          * value (dof will use its dictionary, does not asks back zsEngngModel) adds corresponding increment
          * and updates total value in dictionary.
          */
-        virtual int requiresUnknownsDictionaryUpdate() { return false; }
+        virtual index_t requiresUnknownsDictionaryUpdate() { return false; }
         /**
          * Returns true if equation renumbering is required for given solution step.
          * This may of course change the number of equation and in general there is no guarantee
@@ -760,7 +810,7 @@ namespace zsim {
          * DOF unknowns dictionaries is generally recommended.
          */
         virtual bool requiresEquationRenumbering(zsTimeStep *tStep) { return renumberFlag; }
-        //virtual int supportsBoundaryConditionChange () {return 0;}
+        //virtual index_t supportsBoundaryConditionChange () {return 0;}
         /**
          * Updates necessary values in Dofs unknown dictionaries.
          * @see zsEngngModel::requiresUnknownsDictionaryUpdate
@@ -774,7 +824,7 @@ namespace zsim {
          * Usually the hash algorithm should produce index that depend on time step relatively to
          * actual one to avoid storage of complete history.
          */
-        virtual int giveUnknownDictHashIndx(zsValueModeType mode, zsTimeStep *tStep) { return 0; }
+        virtual index_t giveUnknownDictHashIndx(zsValueModeType mode, zsTimeStep *tStep) { return 0; }
         /**
          * Temporary method for allowing code to seamlessly convert from the old to new way of handling DOF values.
          * (the new way expects the field to store all values, regardless of if they are computed, from BC, or IC.)
@@ -786,7 +836,7 @@ namespace zsim {
          * Returns the parallel context corresponding to given domain (n) and unknown type
          * Default implementation returns i-th context from parallelContextList.
          */
-        virtual zsParallelContext *giveParallelContext(int n);
+        virtual zsParallelContext *giveParallelContext(index_t n);
         /**
          * Creates parallel contexts. Must be implemented by derived classes since the governing equation type is required
          * for context creation.
@@ -908,12 +958,12 @@ namespace zsim {
          * Allows programmer to test some receiver's internal data, before computation begins.
          * @return Nonzero if receiver check is o.k.
          */
-        virtual int checkConsistency() { return 1; }
+        virtual index_t checkConsistency() { return 1; }
         /**
          * Allows programmer to test problem its internal data, before computation begins.
          * @return Nonzero if receiver check is o.k.
          */
-        virtual int checkProblemConsistency();
+        virtual index_t checkProblemConsistency();
         /**
          * Initializes the receiver state. Default implementation calls initModuleManager::doInit service to
          * invoke initialization by individual init modules.
@@ -938,7 +988,7 @@ namespace zsim {
          * @param tStep Time step.
          * @param setNum Set number. If zero, outputs all elements.
          */
-        void outputNodes(FILE *file,  zsDomain &domain, zsTimeStep *tStep, int setNum);
+        void outputNodes(FILE *file,  zsDomain &domain, zsTimeStep *tStep, index_t setNum);
         /**
          * Outputs all elements in the given set.
          * @param file Output stream.
@@ -946,7 +996,7 @@ namespace zsim {
          * @param tStep Time step.
          * @param setNum Set number. If zero, outputs all elements.
          */
-        void outputElements(FILE *file,  zsDomain &domain, zsTimeStep *tStep, int setNum);
+        void outputElements(FILE *file,  zsDomain &domain, zsTimeStep *tStep, index_t setNum);
 
         // input / output
         /// Prints state of receiver. Useful for debugging.
@@ -967,13 +1017,13 @@ namespace zsim {
         /// Returns class name of the receiver.
         virtual const char *giveClassName() const = 0;
         /// Returns nonzero if nonlocal stiffness option activated.
-        virtual int useNonlocalStiffnessOption() { return 0; }
+        virtual index_t useNonlocalStiffnessOption() { return 0; }
         /// Returns true if receiver in parallel mode
         bool isParallel() const { return ( parallelFlag != 0 ); }
         /// Returns domain rank in a group of collaborating processes (0..groupSize-1)
-        int giveRank() const { return rank; }
+        index_t giveRank() const { return rank; }
         /// Returns the number of collaborating processes.
-        int giveNumberOfProcesses() const { return numProcs; }
+        index_t giveNumberOfProcesses() const { return numProcs; }
 
 
         /**
@@ -993,9 +1043,9 @@ namespace zsim {
         /// Context requesting service
         zsEngngModelContext *giveContext() { return this->context; }
         /// Returns number of slave problems.
-        virtual int giveNumberOfSlaveProblems() { return 0; }
+        virtual index_t giveNumberOfSlaveProblems() { return 0; }
         /// Returns i-th slave problem.
-        virtual zsEngngModel *giveSlaveProblem(int i) { return NULL; }
+        virtual zsEngngModel *giveSlaveProblem(index_t i) { return NULL; }
 
         /// Returns the Equation scaling flag, which is used to indicate that governing equation(s) are scaled, or non-dimensionalized.
         virtual bool giveEquationScalingFlag() { return false; }
@@ -1012,7 +1062,7 @@ namespace zsim {
          * to estimate the size of pack/unpack buffer accordingly.
          * @return Upper bound of space needed.
          */
-        virtual int estimateMaxPackSize(zsIntArray &commMap, zsDataStream &buff, int packUnpackType) { return 0; }
+        virtual index_t estimateMaxPackSize(zsIntArray &commMap, zsDataStream &buff, index_t packUnpackType) { return 0; }
 #ifdef __PARALLEL_MODE
         /**
      * Recovers the load balance between processors, if needed. Uses load balancer monitor and load balancer
@@ -1031,7 +1081,7 @@ namespace zsim {
         void initParallel();
         /// Returns reference to itself -> required by communicator.h
         zsEngngModel *giveEngngModel() { return this; }
-        virtual bool isElementActivated( int elemNum ) { return true; }
+        virtual bool isElementActivated( index_t elemNum ) { return true; }
         virtual bool isElementActivated( zsElement *e ) { return true; }
 
 
@@ -1042,7 +1092,7 @@ namespace zsim {
     /**
      * Shows the sparse structure of required matrix, type == 1 stiffness.
      */
-    virtual void showSparseMtrxStructure(int type, zsoofegGraphicContext &gc, zsTimeStep *tStep) { }
+    virtual void showSparseMtrxStructure(index_t type, zsoofegGraphicContext &gc, zsTimeStep *tStep) { }
 #endif
 
         /// Returns string for prepending output (used by error reporting macros).

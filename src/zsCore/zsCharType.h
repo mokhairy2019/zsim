@@ -6,9 +6,12 @@
 #define ZSIM_ZSCHARTYPE_H
 
 
-enum zsCharType {
+namespace zsim {
+    enum zsCharType {
 
-};
+    };
+
+}
 
 
 #endif //ZSIM_ZSCHARTYPE_H

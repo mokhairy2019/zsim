@@ -5,14 +5,16 @@
 #ifndef ZSIM_ZSFIELDPTR_H
 #define ZSIM_ZSFIELDPTR_H
 
+namespace zsim {
+    enum zsFieldPtr {
 
-enum zsFieldPtr {
+    };
 
-};
+    enum zsFieldType {
 
-enum zsFieldType {
+    };
 
-};
 
+}
 
 #endif //ZSIM_ZSFIELDPTR_H

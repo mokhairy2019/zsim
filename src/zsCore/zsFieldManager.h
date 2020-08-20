@@ -5,8 +5,9 @@
 #ifndef ZSIM_ZSFIELDMANAGER_H
 #define ZSIM_ZSFIELDMANAGER_H
 
+#include "zsCore/zsExport.h"
 namespace zsim {
-    class zsFieldManager {
+    class ZSIM_EXPORT zsFieldManager {
 
     };
 

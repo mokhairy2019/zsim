@@ -5,15 +5,17 @@
 #ifndef ZSIM_ZSASSEMBLERCALLBACK_H
 #define ZSIM_ZSASSEMBLERCALLBACK_H
 
+namespace zsim {
+    class MatrixAssembler {
 
-class MatrixAssembler {
-
-};
+    };
 
 
-class VectorAssembler {
+    class VectorAssembler {
 
-};
+    };
+
+}
 
 
 #endif //ZSIM_ZSASSEMBLERCALLBACK_H

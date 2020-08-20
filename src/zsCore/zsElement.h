@@ -5,12 +5,14 @@
 #ifndef ZSIM_ELEMENT_H
 #define ZSIM_ELEMENT_H
 
+#include "zsCore/zsExport.h"
+namespace zsim {
+    class ZSIM_EXPORT zsElement {
+
+    };
 
 
-class zsElement {
-
-};
-
+}
 
 
 #endif //ZSIM_ELEMENT_H

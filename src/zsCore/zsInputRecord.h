@@ -5,10 +5,13 @@
 #ifndef ZSIM_ZSINPUTRECORD_H
 #define ZSIM_ZSINPUTRECORD_H
 
+#include "zsCore/zsExport.h"
+namespace zsim{
+    class ZSIM_EXPORT zsInputRecord {
 
-class zsInputRecord {
+    };
 
-};
+}
 
 
 #endif //ZSIM_ZSINPUTRECORD_H
