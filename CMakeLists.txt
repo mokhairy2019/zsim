@@ -1,10 +1,27 @@
 cmake_minimum_required(VERSION 3.10)
 #set cmake directory
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-#determine build type Release by default
+string(ASCII 27 Esc)
+set(ColourReset "${Esc}[m")
+set(ColourBold  "${Esc}[1m")
+set(Red         "${Esc}[31m")
+set(Green       "${Esc}[32m")
+set(Yellow      "${Esc}[33m")
+set(Blue        "${Esc}[34m")
+set(Magenta     "${Esc}[35m")
+set(Cyan        "${Esc}[36m")
+set(White       "${Esc}[37m")
+set(BoldRed     "${Esc}[1;31m")
+set(BoldGreen   "${Esc}[1;32m")
+set(BoldYellow  "${Esc}[1;33m")
+set(BoldBlue    "${Esc}[1;34m")
+set(BoldMagenta "${Esc}[1;35m")
+set(BoldCyan    "${Esc}[1;36m")
+set(BoldWhite   "${Esc}[1;37m")
+#determine build type Debug by default
 if(NOT CMAKE_BUILD_TYPE)
     # Set default build type to Release
-    set(CMAKE_BUILD_TYPE Release CACHE STRING
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING
             "Type of build (None Debug Release RelWithDebInfo MinSizeRel)" FORCE)
     if(NOT CMAKE_CONFIGURATION_TYPES)
         set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
@@ -42,16 +59,15 @@ if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 endif()
 
 include( zsimUse )
-include( zsimConfig )
+include( zsConfig )
+message("")
+message("${BoldBlue} _____ ${ColourReset}  ${BoldMagenta} _ ${ColourReset}            |${BoldBlue}Zewailcity${ColourReset} ${BoldMagenta}Simulation.${ColourReset}           ")
+message("${BoldBlue}|__  /${ColourReset}___${BoldMagenta}(_)${ColourReset}_ __ ___    |proprietary simulation tool for        ")
+message("${BoldBlue}  / /${ColourReset}/ __| | '_ ` _ \\   |academic and industrial purposes.        ")
+message("${BoldBlue} / /_${ColourReset}\\__ \\ | | | | | |  |       ")
+message("${BoldBlue}/____|${ColourReset}___/_|_| |_| |_|  |Version ${${PROJECT_NAME}_VERSION} (01/08/2020).")
+message("")
 
-message( "   zzzzzzzzz        GGGG      GGGGGGGGG  GGGGGG   GGGGGG  GGGGGGGGGG" )
-message( "         zz         GGGG     GGGG        GGGGGG  GGGGGG  GGGG   GGGG" )
-message( "        zz      GGGGGGGGGGGG GGGGGGGGG   G GGGG  G GGGG GGGG    GGGG" )
-message( "       zz      GGGGGGGGGGGGG GGGGGGGGGG GG GGGG GG GGGG GGGG   GGGGG" )
-message( "      zz        GGGGGGGGGGGG  GGGGGGGGG  GG GGGGGG GGGG  GGGG   GGGG " )
-message( "     zz      GGGG               GGGG  GG  GGGG  GGGG  GGGG   GGGG " )
-message( "    zz      G GGGGGGGGG  GG   GGG   GGGG  GGGGGGGGGG  " )
-message( "   zzzzzzzzz                       version ${${PROJECT_NAME}_VERSION}" )
 
 ## #################################################################
 ## Project options
@@ -62,6 +78,18 @@ include(CTest)
 # Note: clean cache to reset to OFF
 set(BUILD_TESTING "Enable testing" ${ZSIM_BUILD_UNITTESTS})
 
+## #################################################################
+## Preprocessor definitions
+## #################################################################
+
+# Data directory
+include ( zsDataDir )
+
+# Configure
+configure_file ("${PROJECT_SOURCE_DIR}/src/zsCore/zsConfig.h.in"
+        "${PROJECT_BINARY_DIR}/zsCore/zsConfig.h" )
+configure_file ("${PROJECT_SOURCE_DIR}/src/zsCore/zsExport.h.in"
+        "${PROJECT_BINARY_DIR}/zsCore/zsExport.h" )
 ## #################################################################
 ## Collect headers and sources
 ## #################################################################
@@ -112,14 +140,14 @@ else()
 endif(ZSIM_BUILD_UNITTESTS)
 
 #[[if(ZSIM_WITH_CODIPACK)
-    add_subdirectory(extensions/gsCoDiPack)
+    add_subdirectory(extensions/zsCoDiPack)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${CODIPACK_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${CODIPACK_INCLUDE_DIR})
 endif(ZSIM_WITH_CODIPACK)]]
 
 #[[if(ZSIM_WITH_IPOPT)
-    add_subdirectory(extensions/gsIpopt)
+    add_subdirectory(extensions/zsIpopt)
     #set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${IPOPT_INCLUDE_DIR}
     #CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${IPOPT_INCLUDE_DIR})
@@ -145,7 +173,7 @@ endif(ZSIM_WITH_MPI)
     find_package(MPFR QUIET)
 
     if (NOT GMP_FOUND OR NOT MPFR_FOUND)
-        add_subdirectory(extensions/gsMultiPrecision)
+        add_subdirectory(extensions/zsMultiPrecision)
     endif()
 
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${GMP_INCLUDE_DIR}
@@ -162,7 +190,7 @@ endif(ZSIM_WITH_MPI)
 endif()]]
 
 #[[if(ZSIM_WITH_ONURBS)
-    add_subdirectory(extensions/gsOpennurbs)
+    add_subdirectory(extensions/zsOpennurbs)
 endif(ZSIM_WITH_ONURBS)]]
 
 #if(ZSIM_WITH_PARDISO)
@@ -172,11 +200,11 @@ endif(ZSIM_WITH_ONURBS)]]
 #endif(ZSIM_WITH_PASTIX)
 
 #[[if(ZSIM_WITH_PSOLID)
-    add_subdirectory(extensions/gsParasolid)
+    add_subdirectory(extensions/zsParasolid)
 endif(ZSIM_WITH_PSOLID)]]
 
 #[[if(ZSIM_WITH_SPECTRA)
-    add_subdirectory(extensions/gsSpectra)
+    add_subdirectory(extensions/zsSpectra)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${SPECTRA_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${SPECTRA_INCLUDE_DIR})
@@ -210,14 +238,14 @@ endif(ZSIM_WITH_TAUCS)]]
 endif(ZSIM_WITH_UMFPACK)]]
 
 #[[if(ZSIM_WITH_UNUM)
-    add_subdirectory(extensions/gsUnum)
+    add_subdirectory(extensions/zsUnum)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${UNUM_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${UNUM_INCLUDE_DIR})
 endif(ZSIM_WITH_UNUM)]]
 
 #[[if(ZSIM_WITH_OCC)
-    add_subdirectory(extensions/gsOpenCascade)
+    add_subdirectory(extensions/zsOpenCascade)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${OCC_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${OCC_INCLUDE_DIR})
@@ -234,7 +262,7 @@ endif()]]
 include_directories(${ZSIM_INCLUDE_DIRS})
 
 if(ZSIM_WITH_TRILINOS)
-    add_subdirectory(extensions/gsTrilinos)
+    add_subdirectory(extensions/zsTrilinos)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${TRILINOS_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${TRILINOS_INCLUDE_DIR})
@@ -252,7 +280,7 @@ add_subdirectory(src)
 
 if(ZSIM_BUILD_LIB)
     if (ZSIM_EXTRA_DEBUG)
-        set(zsim_SOURCES ${zsim_SOURCES} ${PROJECT_SOURCE_DIR}/src/misc/gsStackWalker.cpp)
+        set(zsim_SOURCES ${zsim_SOURCES} ${PROJECT_SOURCE_DIR}/src/misc/zsStackWalker.cpp)
     endif()
 endif()
 
@@ -262,17 +290,17 @@ endif()
 
 #[[option(ZSIM_COMPFLOW "Enable compflow module" OFF)
 if(ZSIM_COMPFLOW)
-    zsim_fetch_module(gsCompFlow)
+    zsim_fetch_module(zsCompFlow)
 endif()]]
 
 #[[option(ZSIM_ELASTICITY "Enable elasticity module" OFF)
 if(ZSIM_ELASTICITY)
-    zsim_fetch_module(gsElasticity)
+    zsim_fetch_module(zsElasticity)
 endif()]]
 
 #[[option(ZSIM_EXASTENCILS "Enable exastenciles module" OFF)
 if(ZSIM_EXASTENCILS)
-    zsim_fetch_module(gsExaStencils)
+    zsim_fetch_module(zsExaStencils)
 endif()]]
 
 #[[option(ZSIM_UNSUPPORTED "Enable unsupported module" OFF)
@@ -307,15 +335,15 @@ add_subdirectory(doc)
 #[[add_custom_target(plugins)
 
 if(ZSIM_BUILD_AXL)
-    add_subdirectory(plugins/gsAxel)
+    add_subdirectory(plugins/zsAxel)
 endif(ZSIM_BUILD_AXL)
 
 if(ZSIM_BUILD_MEX)
-    add_subdirectory(plugins/gsMex)
+    add_subdirectory(plugins/zsMex)
 endif(ZSIM_BUILD_MEX)]]
 
 #if(ZSIM_BUILD_PVIEW)
-#  add_subdirectory(plugins/gsParaview)
+#  add_subdirectory(plugins/zsParaview)
 #endif(ZSIM_BUILD_PVIEW)
 
 #[[if(ZSIM_BUILD_RHINOPLUGINS)

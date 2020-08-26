@@ -23,8 +23,7 @@ if(ZSIM_BUILD_LIB)
 
     if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC" OR
             "x${CMAKE_GENERATOR}" STREQUAL "xXcode")
-        set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES}
-                "${zsim_SOURCE_DIR}/src/misc/gsDllMain.cpp")
+        set(${PROJECT_NAME}_SOURCES)
     endif()
 
     add_library(${PROJECT_NAME} SHARED
@@ -43,7 +42,7 @@ if(ZSIM_BUILD_LIB)
             POSITION_INDEPENDENT_CODE ON
             LINKER_LANGUAGE CXX
             #COMPILE_DEFINITIONS ${PROJECT_NAME}_EXPORTS # Used for DLL exporting (defined by default by CMake)
-            FOLDER "G+Smo libraries"
+            FOLDER "zsim libraries"
             )
 
     if(ZSIM_WITH_MPFR OR ZSIM_WITH_MPQ)
@@ -141,15 +140,15 @@ endif()
 
 # Avoid naming conflic on MSVC
 if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
-    set(gs_static_lib_suffix _static)
+    set(zs_static_lib_suffix _static)
 endif()
 
 set_target_properties(${PROJECT_NAME}_static PROPERTIES
         COMPILE_DEFINITIONS ${PROJECT_NAME}_STATIC
         POSITION_INDEPENDENT_CODE ON
         LINKER_LANGUAGE CXX
-        FOLDER "G+Smo libraries"
-        OUTPUT_NAME ${PROJECT_NAME}${gs_static_lib_suffix} )
+        FOLDER "zsim libraries"
+        OUTPUT_NAME ${PROJECT_NAME}${zs_static_lib_suffix} )
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/)
 
