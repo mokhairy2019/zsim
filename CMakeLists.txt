@@ -18,10 +18,10 @@ set(BoldBlue    "${Esc}[1;34m")
 set(BoldMagenta "${Esc}[1;35m")
 set(BoldCyan    "${Esc}[1;36m")
 set(BoldWhite   "${Esc}[1;37m")
-#determine build type Release by default
+#determine build type Debug by default
 if(NOT CMAKE_BUILD_TYPE)
     # Set default build type to Release
-    set(CMAKE_BUILD_TYPE Release CACHE STRING
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING
             "Type of build (None Debug Release RelWithDebInfo MinSizeRel)" FORCE)
     if(NOT CMAKE_CONFIGURATION_TYPES)
         set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
