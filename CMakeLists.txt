@@ -140,14 +140,14 @@ else()
 endif(ZSIM_BUILD_UNITTESTS)
 
 #[[if(ZSIM_WITH_CODIPACK)
-    add_subdirectory(extensions/gsCoDiPack)
+    add_subdirectory(extensions/zsCoDiPack)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${CODIPACK_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${CODIPACK_INCLUDE_DIR})
 endif(ZSIM_WITH_CODIPACK)]]
 
 #[[if(ZSIM_WITH_IPOPT)
-    add_subdirectory(extensions/gsIpopt)
+    add_subdirectory(extensions/zsIpopt)
     #set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${IPOPT_INCLUDE_DIR}
     #CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${IPOPT_INCLUDE_DIR})
@@ -173,7 +173,7 @@ endif(ZSIM_WITH_MPI)
     find_package(MPFR QUIET)
 
     if (NOT GMP_FOUND OR NOT MPFR_FOUND)
-        add_subdirectory(extensions/gsMultiPrecision)
+        add_subdirectory(extensions/zsMultiPrecision)
     endif()
 
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${GMP_INCLUDE_DIR}
@@ -190,7 +190,7 @@ endif(ZSIM_WITH_MPI)
 endif()]]
 
 #[[if(ZSIM_WITH_ONURBS)
-    add_subdirectory(extensions/gsOpennurbs)
+    add_subdirectory(extensions/zsOpennurbs)
 endif(ZSIM_WITH_ONURBS)]]
 
 #if(ZSIM_WITH_PARDISO)
@@ -200,11 +200,11 @@ endif(ZSIM_WITH_ONURBS)]]
 #endif(ZSIM_WITH_PASTIX)
 
 #[[if(ZSIM_WITH_PSOLID)
-    add_subdirectory(extensions/gsParasolid)
+    add_subdirectory(extensions/zsParasolid)
 endif(ZSIM_WITH_PSOLID)]]
 
 #[[if(ZSIM_WITH_SPECTRA)
-    add_subdirectory(extensions/gsSpectra)
+    add_subdirectory(extensions/zsSpectra)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${SPECTRA_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${SPECTRA_INCLUDE_DIR})
@@ -238,14 +238,14 @@ endif(ZSIM_WITH_TAUCS)]]
 endif(ZSIM_WITH_UMFPACK)]]
 
 #[[if(ZSIM_WITH_UNUM)
-    add_subdirectory(extensions/gsUnum)
+    add_subdirectory(extensions/zsUnum)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${UNUM_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${UNUM_INCLUDE_DIR})
 endif(ZSIM_WITH_UNUM)]]
 
 #[[if(ZSIM_WITH_OCC)
-    add_subdirectory(extensions/gsOpenCascade)
+    add_subdirectory(extensions/zsOpenCascade)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${OCC_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${OCC_INCLUDE_DIR})
@@ -262,7 +262,7 @@ endif()]]
 include_directories(${ZSIM_INCLUDE_DIRS})
 
 if(ZSIM_WITH_TRILINOS)
-    add_subdirectory(extensions/gsTrilinos)
+    add_subdirectory(extensions/zsTrilinos)
     set (ZSIM_INCLUDE_DIRS ${ZSIM_INCLUDE_DIRS} ${TRILINOS_INCLUDE_DIR}
             CACHE INTERNAL "${PROJECT_NAME} include directories")
     #include_directories(${TRILINOS_INCLUDE_DIR})
@@ -280,7 +280,7 @@ add_subdirectory(src)
 
 if(ZSIM_BUILD_LIB)
     if (ZSIM_EXTRA_DEBUG)
-        set(zsim_SOURCES ${zsim_SOURCES} ${PROJECT_SOURCE_DIR}/src/misc/gsStackWalker.cpp)
+        set(zsim_SOURCES ${zsim_SOURCES} ${PROJECT_SOURCE_DIR}/src/misc/zsStackWalker.cpp)
     endif()
 endif()
 
@@ -290,17 +290,17 @@ endif()
 
 #[[option(ZSIM_COMPFLOW "Enable compflow module" OFF)
 if(ZSIM_COMPFLOW)
-    zsim_fetch_module(gsCompFlow)
+    zsim_fetch_module(zsCompFlow)
 endif()]]
 
 #[[option(ZSIM_ELASTICITY "Enable elasticity module" OFF)
 if(ZSIM_ELASTICITY)
-    zsim_fetch_module(gsElasticity)
+    zsim_fetch_module(zsElasticity)
 endif()]]
 
 #[[option(ZSIM_EXASTENCILS "Enable exastenciles module" OFF)
 if(ZSIM_EXASTENCILS)
-    zsim_fetch_module(gsExaStencils)
+    zsim_fetch_module(zsExaStencils)
 endif()]]
 
 #[[option(ZSIM_UNSUPPORTED "Enable unsupported module" OFF)
@@ -335,15 +335,15 @@ add_subdirectory(doc)
 #[[add_custom_target(plugins)
 
 if(ZSIM_BUILD_AXL)
-    add_subdirectory(plugins/gsAxel)
+    add_subdirectory(plugins/zsAxel)
 endif(ZSIM_BUILD_AXL)
 
 if(ZSIM_BUILD_MEX)
-    add_subdirectory(plugins/gsMex)
+    add_subdirectory(plugins/zsMex)
 endif(ZSIM_BUILD_MEX)]]
 
 #if(ZSIM_BUILD_PVIEW)
-#  add_subdirectory(plugins/gsParaview)
+#  add_subdirectory(plugins/zsParaview)
 #endif(ZSIM_BUILD_PVIEW)
 
 #[[if(ZSIM_BUILD_RHINOPLUGINS)

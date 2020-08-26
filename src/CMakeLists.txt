@@ -51,7 +51,7 @@ FOREACH(subdir ${SUBDIRS})
             COMPILE_DEFINITIONS zsim_EXPORTS
             POSITION_INDEPENDENT_CODE ON
             LINKER_LANGUAGE CXX
-            FOLDER "G+Smo modules"
+            FOLDER "zsim modules"
             #EXCLUDE_FROM_ALL 1
             #EXCLUDE_FROM_DEFAULT_BUILD 1
             )
@@ -65,7 +65,7 @@ FOREACH(subdir ${SUBDIRS})
     endif()
 
     set(zsim_MODULES ${zsim_MODULES} $<TARGET_OBJECTS:${GM_NAME}>
-            CACHE INTERNAL "G+Smo modules" )
+            CACHE INTERNAL "zsim modules" )
 
     ## install module
     if (NOT ${GM_NAME} MATCHES gsMesh) # avoid installing twice gsMesh

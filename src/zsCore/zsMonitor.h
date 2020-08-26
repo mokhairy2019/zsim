@@ -33,7 +33,7 @@ namespace zsim {
     public:
         zsMonitor(index_t n) : number(n) {}
 
-        virtual ~zsMonitor();
+        virtual ~zsMonitor() { };
 
         /// Initializes receiver according to object description stored in input record.
         virtual void initializeFrom(zsInputRecord &ir) = 0;

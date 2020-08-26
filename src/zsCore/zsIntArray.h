@@ -9,7 +9,7 @@
 #include "zsLinearAlgebra.h"
 
 namespace zsim {
-    class ZSIM_EXPORT zsIntArray : public zsVector<index_t> {
+    class zsIntArray : public zsVector<index_t> {
 
     };
 }

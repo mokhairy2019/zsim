@@ -42,7 +42,7 @@ if(ZSIM_BUILD_LIB)
             POSITION_INDEPENDENT_CODE ON
             LINKER_LANGUAGE CXX
             #COMPILE_DEFINITIONS ${PROJECT_NAME}_EXPORTS # Used for DLL exporting (defined by default by CMake)
-            FOLDER "G+Smo libraries"
+            FOLDER "zsim libraries"
             )
 
     if(ZSIM_WITH_MPFR OR ZSIM_WITH_MPQ)
@@ -147,7 +147,7 @@ set_target_properties(${PROJECT_NAME}_static PROPERTIES
         COMPILE_DEFINITIONS ${PROJECT_NAME}_STATIC
         POSITION_INDEPENDENT_CODE ON
         LINKER_LANGUAGE CXX
-        FOLDER "G+Smo libraries"
+        FOLDER "zsim libraries"
         OUTPUT_NAME ${PROJECT_NAME}${zs_static_lib_suffix} )
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/)
